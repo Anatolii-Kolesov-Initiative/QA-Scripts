@@ -3,17 +3,18 @@ import pandas as pd
 import re
 import csv
 import numpy as np
-from datetime import datetime, timedelta
+from datetime import datetime 
+from datetime import timedelta
 
 ################# WIP script combining MMM_columns_name_check_script_2025 & MMM_data_type_check_script_v2
 # templates: https://interpublic-my.sharepoint.com/personal/ayman_kassem-toufic_initiative_com/_layouts/15/onedrive.aspx?csf=1&web=1&e=ekIQcp&CID=6b398471%2De431%2D4e1b%2Db7ae%2D0ccbee706f7d&id=%2Fpersonal%2Fayman%5Fkassem%2Dtoufic%5Finitiative%5Fcom%2FDocuments%2FNatwest%2FNatwest%20MMM%20Data%2F2025%2FGold%20Star%20Templates&FolderCTID=0x0120000A6605C59EE50740AFBBC7EAE6A969B4&view=0&noAuthRedirect=1
 
 # prompt for the file path:
-directory_path = input("Please enter the path to the CSV file: ")
+#directory_path = input("Please enter the path to the CSV file: ")
 
 
 # alternatively, specify the local directory with the files
-# directory_path = r'/Users/anatolii.kolesov/Downloads/MMM files Feb' #directory_path = r'/Users/ayman.kassem-toufi/Downloads/Jan MMM File QA/Nov Files'
+directory_path = r'C:\Users\anatolii.kolesov\Downloads\Feb MMM files' #directory_path = r'/Users/ayman.kassem-toufi/Downloads/Jan MMM File QA/Nov Files'
 
 
 def sum_of_value(lis):
@@ -124,7 +125,7 @@ def check_file_date(filename):
             continue
 
         # Check if end date is the last day of the month
-        last_day = (datetime(start.year, start.month % 12 + 1, 1) - datetime.timedelta(days=1)).day
+        last_day = (datetime(start.year, start.month % 12 + 1, 1) - timedelta(days=1)).day
         if end.day != last_day:
             results.append((filename, False, f"End date should be the last day of the month ({last_day})."))
             continue
