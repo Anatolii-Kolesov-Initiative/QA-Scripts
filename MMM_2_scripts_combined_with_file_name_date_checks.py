@@ -10,7 +10,7 @@ from datetime import timedelta
 # templates: https://interpublic-my.sharepoint.com/personal/ayman_kassem-toufic_initiative_com/_layouts/15/onedrive.aspx?csf=1&web=1&e=ekIQcp&CID=6b398471%2De431%2D4e1b%2Db7ae%2D0ccbee706f7d&id=%2Fpersonal%2Fayman%5Fkassem%2Dtoufic%5Finitiative%5Fcom%2FDocuments%2FNatwest%2FNatwest%20MMM%20Data%2F2025%2FGold%20Star%20Templates&FolderCTID=0x0120000A6605C59EE50740AFBBC7EAE6A969B4&view=0&noAuthRedirect=1
 
 # prompt for the file path:
-directory_path = input("Please enter the path to the CSV file: ")
+directory_path = input("Please enter the path to the CSV files: ")
 
 
 # alternatively, specify the local directory with the files
@@ -84,7 +84,7 @@ def check_file_date(filename):
     expected_year = current_date.year if current_date.month > 1 else current_date.year - 1
 
     valid_channels = [
-        "AdSmart", "Direct Digital", "Cinema", "PPC", "Print", "Programmatic",
+        "AdSmart", "DirectDigital", "Cinema", "PPC", "Print", "Programmatic",
         "Radio", "Social", "TV", "VOD", "OOH"
     ]
 
@@ -242,6 +242,29 @@ def process_and_validate_csv_files(directory_path):
                 df = df[df.apply(sum_of_value, axis=1) > 0]
                 df = df[[col for col in df.columns if not col.startswith('Unnamed')]]
                 
+                # Check for any remaining empty or null values
+                cols_with_missing = []
+                for col in df.columns:
+                    # Count nulls
+                    null_count = df[col].isnull().sum()
+                    # Count empty strings (only makes sense on object columns)
+                    empty_count = 0
+                    if df[col].dtype == object:
+                        empty_count = df[col].astype(str).str.strip().eq('').sum()
+                    # If either is non-zero, flag it
+                    if null_count or empty_count:
+                        cols_with_missing.append((col, null_count, empty_count))
+
+                if cols_with_missing:
+                    print("Columns with empty or null values:")
+                    for col, n_null, n_empty in cols_with_missing:
+                        print(f"  {col}: {n_null} nulls, {n_empty} empty strings")
+                else:
+                    print("No columns have empty or null values.")
+
+
+
+
                 # Save transformed data
                 output_file_path = os.path.join(output_folder, filename)
                 df.to_csv(output_file_path, encoding='utf-8', index=False)
